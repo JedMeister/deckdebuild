@@ -1,0 +1,16 @@
+#!/bin/sh -e
+
+FAB_PATH=${FAB_PATH:-/turnkey/fab}
+CODENAME=$(lsb_release -cs)
+
+cat > /etc/deckdebuild.conf << EOF
+satisfydepends-cmd /usr/lib/pbuilder/pbuilder-satisfydepends-classic
+vardir $FAB_PATH/deckdebuilds
+EOF
+
+mkdir -p $FAB_PATH/deckdebuilds/{builds,chroots}
+mkdir -p $FAB_PATH/buildroots/$CODENAME
+
+#DEBHELPER#
+
+exit 0
