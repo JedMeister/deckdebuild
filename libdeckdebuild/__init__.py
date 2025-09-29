@@ -201,6 +201,7 @@ def deckdebuild(
     # copy packages
     packages = debsource.get_packages(path)
 
+    copied_file = False
     for fname in os.listdir(build_dir):
         if (
             not fname.endswith(".deb")
@@ -210,7 +211,6 @@ def deckdebuild(
             and not fname.endswith(".tar.gz")
             and not fname.endswith(".tar.bz2")
         ):
-            error = True
             continue
 
         if fname.split("_")[0] in packages:
@@ -219,8 +219,11 @@ def deckdebuild(
 
             print(f"# cp {shlex.quote(src)} {shlex.quote(dst)}")
             shutil.copyfile(src, dst)
+            # assume that if we are copying files, build was successful
+            copied_file = True
 
-    if error:
+    if error or not copied_file:
+        error = True
         print(
             f"building {source_name}_{source_version} package failed"
             f"\n - see build log ({build_log}) &/or previous output for info",
