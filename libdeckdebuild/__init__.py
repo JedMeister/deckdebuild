@@ -80,7 +80,12 @@ def deckdebuild(
     chroot = join(path_chroots, source_dir)
 
     orig_uid = os.getuid()
-    os.setuid(0)
+    try:
+        os.setuid(0)
+    except PermissionError as e:
+        raise DeckDebuildError(
+            "deckdebuild requires root - please rerun with sudo"
+        ) from e
 
     # delete deck if it already exists
     if exists(chroot):
@@ -216,7 +221,6 @@ def deckdebuild(
         if fname.split("_")[0] in packages:
             src = join(build_dir, fname)
             dst = join(output_dir, fname)
-
             print(f"# cp {shlex.quote(src)} {shlex.quote(dst)}")
             shutil.copyfile(src, dst)
             # assume that if we are copying files, build was successful
